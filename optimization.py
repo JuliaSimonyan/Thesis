@@ -3,23 +3,29 @@ import numpy as np
 import multiprocessing
 from functools import lru_cache
 
-def memoize(func):
-    """Caches function calls to avoid redundant calculations."""
+def memoize(func, arr):
+    """
+    A simple memoization example for optimizing repeated function calls.
+    """
     cache = {}
-    def memoized_func(*args):
-        if args not in cache:
-            cache[args] = func(*args)
-        return cache[args]
-    return memoized_func
+    
+    def memoized_function(arr):
+        if tuple(arr) in cache:
+            return cache[tuple(arr)]  # Return cached result
+        result = func(arr)  # Call the original function (not a string)
+        cache[tuple(arr)] = result  # Cache the result
+        return result
+    
+    return memoized_function
 
 def loop_unrolling(arr):
-    """Optimizes the loop by unrolling it."""
-    n = len(arr)
-    for i in range(0, n - 1, 2):
-        if i + 1 < n:
-            if arr[i] > arr[i + 1]:
-                arr[i], arr[i + 1] = arr[i + 1], arr[i]
-    return arr
+    """
+    A simple loop unrolling optimization example for sorting.
+    """
+    for i in range(0, len(arr) - 1, 2):  # Skip 2 steps for unrolling
+        arr[i], arr[i + 1] = arr[i + 1], arr[i]  # Perform item swapping
+    return arr  # Return the modified array
+
 
 def tail_recursive_fib(n, accumulator=0):
     """Optimizes recursion to a tail recursive function."""

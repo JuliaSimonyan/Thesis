@@ -1,21 +1,19 @@
+from sklearn.cluster import KMeans
 import numpy as np
 
-def perform_clustering(feature_data):
-    # Convert to numpy array
-    data = np.array(feature_data)
-    
-    # Check if the data contains any non-numeric entries and convert them to NaN
-    # This step ensures that we don't run into type issues.
-    data = np.where(np.isnan(data.astype(float)), np.nan, data)  # Convert to float if possible
-    
-    # Remove rows with NaN values
-    data = data[~np.isnan(data).any(axis=1)]
-    
-    # Perform clustering here, e.g., KMeans or other clustering algorithms.
-    # This is just an example; replace with your actual clustering code.
-    from sklearn.cluster import KMeans
-    kmeans = KMeans(n_clusters=3)
-    kmeans.fit(data)
-    
-    # Return clustering result (cluster assignments, features, etc.)
-    return data
+def perform_clustering(numeric_data, original_feature_data):
+    """
+    Perform clustering on the numeric data and add the cluster label to each feature.
+    """
+    # Convert the numeric data to a NumPy array
+    data = np.array(numeric_data)
+
+    # Perform KMeans clustering with 2 clusters (since you have 2 samples)
+    kmeans = KMeans(n_clusters=2, random_state=42)
+    clusters = kmeans.fit_predict(data)
+
+    # Add cluster labels to the original feature data
+    for i, feature in enumerate(original_feature_data):
+        feature['Cluster'] = clusters[i]  # Assign cluster label to each feature dictionary
+
+    return original_feature_data

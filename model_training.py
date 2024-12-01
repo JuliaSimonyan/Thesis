@@ -16,16 +16,21 @@ def measure_execution_time(func, arr):
 
 # Apply all optimizations and return execution time improvements for each method
 def apply_all_optimizations(func, arr):
+    """
+    Apply all optimization methods and return execution time improvements for each method.
+    """
+    # Apply optimizations to the function `func` with the array `arr`
     optimizations = {
-        'memoize': memoize(func),
-        'loop_unrolling': loop_unrolling(func),
+        'memoize': memoize(func, arr),  # Pass both `func` and `arr`
+        'loop_unrolling': loop_unrolling(arr),  # Pass `arr` to `loop_unrolling`
         # Add other optimizations as needed
     }
+    
     improvements = {}
     for opt, optimized_func in optimizations.items():
-        # Measure time before and after applying optimization
         execution_time_improvement = measure_execution_time(optimized_func, arr)
         improvements[f"{opt}_Execution Time Improvement"] = execution_time_improvement
+    
     return improvements
 
 # Function to train the model
@@ -65,23 +70,38 @@ def predict_best_optimizations(model, cluster_features):
 
 # Function to collect data, apply clustering and optimizations
 def collect_data():
-    functions = [bubble_sort, quick_sort]  # Example functions to analyze
+    """
+    Collect feature data, apply clustering, and collect optimization results.
+    """
+    # Define the functions directly
+    functions = [bubble_sort, quick_sort]  # These should be function objects, not strings.
+    arr = [5, 2, 9, 1, 5, 6]  # Example array for sorting optimization
+    
     feature_data = []
     
     # Extract features from functions
     for func in functions:
-        feature = extract_features(func, [5, 2, 9, 1, 5, 6])  # Example input data
+        feature = extract_features(func, arr)  # Example input data
         feature_data.append(feature)
 
-    # Perform clustering
-    clustered_data = perform_clustering(feature_data)
+    # Prepare the data for clustering (extract numeric features)
+    numeric_data = []
+    for feature in feature_data:
+        # Extract only the numeric values: Execution Time and Memory Usage
+        feature_values = [feature['Execution Time'], feature['Memory Usage (in MiB)']]
+        numeric_data.append(feature_values)
+
+    # Perform clustering with numeric data
+    clustered_data = perform_clustering(numeric_data, feature_data)  # Pass both numeric and original feature data
 
     # Collect optimization results for each function
     df_rows = []
     for feature in clustered_data:
-        func_name = feature['Function Name']
-        arr = [5, 2, 9, 1, 5, 6]  # Example input array
-        optimization_results = apply_all_optimizations(func_name, arr)
+        func = feature['Function Name']  # This should be a function object, not a string
+        
+        # Pass the function and array to apply_all_optimizations
+        optimization_results = apply_all_optimizations(func, arr)  # Pass `func` and `arr` (the array)
+        
         row = {**feature, **optimization_results}
         df_rows.append(row)
 
